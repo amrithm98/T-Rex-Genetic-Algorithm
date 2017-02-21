@@ -3,6 +3,7 @@ import math
 import sys
 import random
 from pygame.locals import *
+import time
 
 zero=pygame.image.load("0.png")
 one=pygame.image.load("1.png")
@@ -46,11 +47,21 @@ def cactus(cac):
 			else:
 				scr.blit(cactsmall,(start,200-cactsmall.get_height()+20))
 				start+=cactsmall.get_width()-5
+def collision(x,y,cac):
+	if(cac[0][0]<5):
+		a=cac[1][0]
+		b=cac[1][1]
+	else:
+		a=cac[0][0]
+		b=cac[0][0]
 class trex():
 	def __init__(self):
 		self.l=0
 		self.x=0
 		self.y=land1.get_width()-10
+		self.posx=85
+		self.t=0
+		self.posy=200-runl.get_height()+25
 		p=random.randint(1,3)
 		s=[0 for i in range (p)]
 		for j in range(len(s)):
@@ -67,25 +78,19 @@ class trex():
 				s[j]=1
 		u=len(self.cactii)
 		self.cactii+=[[(self.cactii[u-1][0]+225+r),(s)]]
-	def run(self):
-		while (1):
-			print (self.cactii)
+	def jump(self):
+		while(1):	
 			scr.fill((255,255,255))
 			land(self.x,self.y)
 			self.x-=20
 			self.y-=20
+			print (self.posy)
 			if(self.x>self.y):
 				if(self.y<=-(land1.get_width())):
 					self.y=self.x+land1.get_width()-15
 			else:
 				if(self.x<=-(land1.get_width())):
 					self.x=self.y+land1.get_width()-15
-			if(self.l==0):
-				scr.blit(runl,(85,200-runl.get_height()+25))
-				self.l=1
-			else:
-				scr.blit(runr,(85,200-runr.get_height()+25))
-				self.l=0
 			cactus(self.cactii)
 			for j in range(len(self.cactii)):
 				self.cactii[j][0]-=20
@@ -101,11 +106,81 @@ class trex():
 						s[u]=1
 				n=len(self.cactii)
 				self.cactii+=[[(self.cactii[n-1][0]+225+r),s]]
-			clock.tick(10)
-			pygame.display.flip()
+			if(self.l==0):
+				scr.blit(runl,(self.posx,self.posy))
+				self.l=1
+			else:
+				scr.blit(runr,(self.posx,self.posy))
+				self.l=0
+			clock.tick(1000)
+#			pygame.display.flip()
+#			pygame.display.flip()
+			if(self.posy<=(200-cactbig.get_height()+20-15)/1.25) or (self.t==1):
+				self.posy+=10
+				self.t=1
+				print ("Incrementing posy")
+			else:
+				self.posy-=10
+				print("Decrementing posy")
+			if(self.posy>=(200-runl.get_height()+25)):
+				self.posy=200-runl.get_height()+25
+				print ("Breaking out of the loop")
+				self.t=0
+				break
 			for event in pygame.event.get():
 				if event.type==pygame.QUIT:
 					pygame.quit()
 					quit()
-t=trex()
-t.run()
+			collision(self.x,self.y,self.cactii)
+			clock.tick(10)
+			pygame.display.flip()
+	def run(self):
+		scr.fill((255,255,255))
+		land(self.x,self.y)
+		self.x-=20
+		self.y-=20
+		if(self.x>self.y):
+			if(self.y<=-(land1.get_width())):
+				self.y=self.x+land1.get_width()-15
+		else:
+			if(self.x<=-(land1.get_width())):
+				self.x=self.y+land1.get_width()-15
+		if(self.l==0):
+			scr.blit(runl,(self.posx,self.posy))
+			self.l=1
+		else:
+			scr.blit(runr,(self.posx,self.posy))
+			self.l=0
+		cactus(self.cactii)
+		for j in range(len(self.cactii)):
+			self.cactii[j][0]-=20
+		if(self.cactii[0][0]<-50):
+			del self.cactii[0]
+		if(self.cactii[-1][0]<740):
+			r=random.randint(0,225)
+			p=random.randint(1,3)
+			s=[0 for i in range(p)]
+			for u in range(len(s)):
+				y=random.randint(0,1)
+				if(y==1):
+					s[u]=1
+			n=len(self.cactii)
+			self.cactii+=[[(self.cactii[n-1][0]+225+r),s]]
+		collision(self.x,self.y,self.cactii)
+		clock.tick(10)
+		pygame.display.flip()
+def startgame():
+	t=trex()
+	z=0
+	while (1):
+		for event in pygame.event.get():
+			if event.type==KEYDOWN:
+				print ("event occured")
+				if event.key==K_SPACE or event.key==K_UP: 
+					print ("space entered")
+					t.jump()
+			elif event.type==pygame.QUIT:
+				pygame.quit()
+				quit()
+		t.run()
+startgame()
