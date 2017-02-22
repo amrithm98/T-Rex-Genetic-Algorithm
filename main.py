@@ -112,7 +112,7 @@ class trex():
 			else:
 				scr.blit(runr,(self.posx,self.posy))
 				self.l=0
-			clock.tick(1000)
+			#clock.tick(10000)
 #			pygame.display.flip()
 #			pygame.display.flip()
 			if(self.posy<=(200-cactbig.get_height()+20-15)/1.25) or (self.t==1):
@@ -132,8 +132,8 @@ class trex():
 					pygame.quit()
 					quit()
 			collision(self.x,self.y,self.cactii)
-			clock.tick(10)
-			pygame.display.flip()
+			clock.tick(22)
+			pygame.display.update()
 	def run(self):
 		scr.fill((255,255,255))
 		land(self.x,self.y)
@@ -167,7 +167,7 @@ class trex():
 			n=len(self.cactii)
 			self.cactii+=[[(self.cactii[n-1][0]+225+r),s]]
 		collision(self.x,self.y,self.cactii)
-		clock.tick(10)
+		clock.tick(20)
 		pygame.display.flip()
 def startgame():
 	t=trex()
